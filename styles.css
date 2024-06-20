@@ -1,0 +1,60 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  
+}
+body{
+  background-color: #b6b6b6;
+  color: #fff;
+}
+
+div{
+  background-color: white;
+  color: black;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  margin: 2rem;
+}
+
+.title{
+  color: orange;
+  line-height: .8;
+}
+
+.content{
+  box-shadow: 0 .125rem .25rem 0 rgba(0,0,0, .4);
+  transition: transform 1s ease;
+}
+.content:hover{
+  transform: translateY(-.35rem) scale(1.02);
+}
+.shadow-hover:hover{
+  transition: transform 1s ease, box-shadow 1s ease;
+}
+.shadow-hover:hover{
+  box-shadow: 0 .5rem 1rem -0.25 rgba(0,0,0,1);
+
+}
+
+
+
+
+.pseudo-hover{
+  position: relative;
+}
+
+.pseudo-hover::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* prerender shadow */
+  box-shadow: 0 .5rem 1rem -0.25 rgba(0,0,0,1);
+  opacity: 0;
+  transition: opacity 1s ease;
+
+}
+
+.pseudo-hover:hover::after{
+  opacity: 1;
+}
