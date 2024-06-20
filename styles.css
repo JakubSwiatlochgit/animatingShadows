@@ -26,15 +26,19 @@ div{
   box-shadow: 0 .125rem .25rem 0 rgba(0,0,0, .4);
   transition: transform 1s ease;
 }
-.content:hover{
+.pseudo-hover:hover{
   transform: translateY(-.35rem) scale(1.02);
 }
-.shadow-hover:hover{
-  transition: transform 1s ease, box-shadow 1s ease;
+
+.shadow-hover{
+  position: relative;
+  top:0;
+
+  transition: top 1s ease, box-shadow 1s ease;
 }
 .shadow-hover:hover{
+  top: -.35em;
   box-shadow: 0 .5rem 1rem -0.25 rgba(0,0,0,1);
-
 }
 
 
