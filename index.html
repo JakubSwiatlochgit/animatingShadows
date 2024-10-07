@@ -4,35 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ustawienia bezpieczeństwa</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="settings-container">
-        <div class="section">
-            <h2>🔒 Bezpieczeństwo</h2>
-            <form>
-                <label for="password-length">Minimalna długość i złożoność hasła dla użytkownika</label>
-                <div class="row">
-                    <label for="password-length">Długość hasła:</label>
-                    <input type="number" id="password-length" value="7" min="1">
-                </div>
-                <div class="row">
-                    <label>Złożoność hasła:</label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox"> Znaki specjalne lub cyfry</label>
-                        <label><input type="checkbox"> Małe i wielkie litery</label>
+    <div class="container">
+        <div class="panels">
+          <div class="settings-container">
+            <div class="section">
+                <form id="passwordForm">
+                  <h2>Panel Admina</h2>
+                    <label for="password-length">Minimalna długość i złożoność hasła dla użytkownika</label>
+                    <div class="row">
+                        <label for="password-length">Długość hasła:</label>
+                        <input type="number" id="password-length" value="8" min="1">
                     </div>
+                    <div class="row">
+                        <label>Złożoność hasła:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox"> Znaki specjalne lub cyfry</label>
+                            <label><input type="checkbox"> Małe i wielkie litery</label>
+                        </div>
+                    </div>
+                </form>
+
+                
                 </div>
-                <div class="row">
-                    <label for="password-expiry">Ważność hasła użytkownika:</label>
-                    <input type="number" id="password-expiry" value="30" min="1"> dni
-                </div>
-                <div class="row">
-                    <input type="checkbox" id="lock-settings">
-                    <label for="lock-settings">Zablokuj ustawienia użytkownika na tym komputerze</label>
-                </div>
-            </form>
+            </div>
+
+            <div class="settings-container">
+              <div class="section">
+                <h2>Panel Logowania</h2>
+
+                  <form id="loginForm">
+                      <div class="row">
+                          <label for="user-password">Wpisz hasło:</label>
+                          <input type="password" id="user-password" oninput="validatePassword()">
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+
+
+        <!-- Nowe okno po prawej -->
+        <div class="password-requirements">
+            <h3>Wymagania hasła</h3>
+            <ul>
+                <li id="min-length-requirement">
+                    <span class="icon">❌</span> Minimalna długość: 8 znaków
+                </li>
+                <li id="unique-characters-requirement">
+                    <span class="icon">❌</span> Brak powtarzających się znaków
+                </li>
+            </ul>
         </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

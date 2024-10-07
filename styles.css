@@ -7,57 +7,52 @@ body {
   background-color: #f9f9f9;
   margin: 0;
   padding: 0;
+  background-color: #222;
+  color: #fff;
+}
+.panels{
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  margin: 50px auto;
+  max-width: 900px;
 }
 
 .settings-container {
-  width: 100%;
-  max-width: 500px;
-  margin: 50px auto;
-  background-color: white;
+  width: 60%;
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.section h2 {
-  font-size: 18px;
-  color: #4d2a6b;
-  margin-bottom: 20px;
+.password-requirements {
+  width: 35%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #333;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.row {
-  display: flex;
-  align-items: center;
+.password-requirements h3 {
+  color: #fff;
   margin-bottom: 15px;
 }
 
-label {
-  flex: 1;
-  font-size: 14px;
+.password-requirements ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-input[type="number"] {
-  width: 60px;
-  padding: 5px;
-  margin-left: 10px;
+.password-requirements li {
+  margin-bottom: 10px;
+  color: #fff;
 }
 
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.checkbox-group label {
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-input[type="checkbox"] {
+.icon {
   margin-right: 10px;
 }
