@@ -1,6 +1,3 @@
-const minLength = 8; 
-let requireSpecialCharacters = false;
-let requireUpperLower = false;
 
 // Backend
 function login(event) {
@@ -82,29 +79,41 @@ function saveSettings() {
     return false;
 }
 
+let passwordSettings = {
+    minLength: 8, // domyślna minimalna długość hasła
+    requireSpecialCharacters: false, // czy wymagane są znaki specjalne
+    requireUpperLower: false // czy wymagane są wielkie i małe litery
+};
+
+// Możesz aktualizować ten obiekt po zapisaniu nowych ustawień
 function updateSettingsView(settings) {
     if (settings) {
+        passwordSettings.minLength = settings.minLength || 8;
+        passwordSettings.requireSpecialCharacters = settings.requireSpecialCharacters || false;
+        passwordSettings.requireUpperLower = settings.requireUpperLower || false;
+
         const passwordLengthInput = document.getElementById('password-length');
         if (passwordLengthInput) {
-            passwordLengthInput.value = settings.minLength || 8;
-            document.getElementById('min-length-value').innerText = settings.minLength || 8;
+            passwordLengthInput.value = passwordSettings.minLength;
+            document.getElementById('min-length-value').innerText = passwordSettings.minLength;
         }
 
         const specialCharsCheckbox = document.getElementById('special-characters');
         if (specialCharsCheckbox) {
-            specialCharsCheckbox.checked = settings.requireSpecialCharacters || false;
-            document.getElementById('special-char-requirement').innerText = settings.requireSpecialCharacters ? '✔️' : '❌';
+            specialCharsCheckbox.checked = passwordSettings.requireSpecialCharacters;
+            document.getElementById('special-char-requirement').innerText = passwordSettings.requireSpecialCharacters ? '✔️' : '❌';
         }
 
         const upperLowerCheckbox = document.getElementById('upper-lower-letters');
         if (upperLowerCheckbox) {
-            upperLowerCheckbox.checked = settings.requireUpperLower || false;
-            document.getElementById('upper-lower-requirement').innerText = settings.requireUpperLower ? '✔️' : '❌';
+            upperLowerCheckbox.checked = passwordSettings.requireUpperLower;
+            document.getElementById('upper-lower-requirement').innerText = passwordSettings.requireUpperLower ? '✔️' : '❌';
         }
     } else {
         console.warn('Ustawienia są niezdefiniowane, używam wartości domyślnych');
     }
 }
+
 
 
 window.onload = loadSettings;
@@ -158,48 +167,8 @@ function validateAdminPassword() {
 
     return valid;
 }
-
-// Walidacja hasła użytkownika
-function validatePassword() {
-    const password = document.getElementById('user-password').value;
-
-    const minLengthRequirement = document.getElementById('min-length-requirement');
-    const uniqueCharactersRequirement = document.getElementById('unique-characters-requirement');
-    const specialCharRequirement = document.getElementById('special-char-requirement');
-    const upperLowerRequirement = document.getElementById('upper-lower-requirement');
-
-    if (password.length >= minLength) {
-        minLengthRequirement.querySelector('.icon').textContent = '✔️';
-        minLengthRequirement.querySelector('.icon').style.color = 'green';
-    } else {
-        minLengthRequirement.querySelector('.icon').textContent = '❌';
-        minLengthRequirement.querySelector('.icon').style.color = 'red';
-    }
-
-    // Unikalne znaki
-    if (checkUniqueCharacters(password)) {
-        uniqueCharactersRequirement.querySelector('.icon').textContent = '✔️';
-        uniqueCharactersRequirement.querySelector('.icon').style.color = 'green';
-    } else {
-        uniqueCharactersRequirement.querySelector('.icon').textContent = '❌';
-        uniqueCharactersRequirement.querySelector('.icon').style.color = 'red';
-    }
-
-    // Znaki specjalne i cyfry
-    if (requireSpecialCharacters && /[\W\d]/.test(password)) {
-        specialCharRequirement.querySelector('.icon').textContent = '✔️';
-        specialCharRequirement.querySelector('.icon').style.color = 'green';
-    } else {
-        specialCharRequirement.querySelector('.icon').textContent = '❌';
-        specialCharRequirement.querySelector('.icon').style.color = 'red';
-    }
-
-    // Duże i małe litery
-    if (requireUpperLower && /[a-z]/.test(password) && /[A-Z]/.test(password)) {
-        upperLowerRequirement.querySelector('.icon').textContent = '✔️';
-        upperLowerRequirement.querySelector('.icon').style.color = 'green';
-    } else {
-        upperLowerRequirement.querySelector('.icon').textContent = '❌';
-        upperLowerRequirement.querySelector('.icon').style.color = 'red';
-    }
+// Funkcja do sprawdzania, czy hasło zawiera unikalne znaki
+function checkUniqueCharacters(password) {
+    const uniqueChars = new Set(password);
+    return uniqueChars.size >= password.length * 0.7; // Przykład: wymaga, aby co najmniej 70% znaków było unikalnych
 }
