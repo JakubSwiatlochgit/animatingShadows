@@ -9,7 +9,7 @@ function login(event) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('user-password').value;
 
-    fetch('/login', {
+    fetch('http://127.0.0.1:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -20,12 +20,11 @@ function login(event) {
             localStorage.setItem('token', data.token);
             adminPanel();
         } else {
-            showError('Login lub hasło niepoprawne');
+            console.log("Haslo nie prawidłowe lub login")
         }
     })
     .catch(err => {
         console.error('Błąd:', err);
-        showError('Wystąpił błąd. Spróbuj ponownie później.');
     });
 }
 

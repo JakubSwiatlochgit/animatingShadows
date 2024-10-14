@@ -48,10 +48,11 @@ const checkUniqueCharacters = (password) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const user = users.find(u => u.username === username);
-
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
         const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+
         res.json({ token });
+
     } else {
         res.status(401).json({ message: 'Login lub hasło niepoprawne' });
     }
