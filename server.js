@@ -3,120 +3,78 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
-const JWT_SECRET = 'supersecretkey';
+const JWT_SECRET = 'supersecretkey';  // Sekretny klucz do JWT
 
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
 
-let passwordSettings = {
-  minLength: 8,
-  requireSpecialCharacters: false,
-  requireUpperLower: false
-};
-
-
-
-const users = [
+let users = [
     {
         username: 'ADMIN',
-        passwordHash: bcrypt.hashSync('admin123', 10)
+        passwordHash: bcrypt.hashSync('admin123', 10),  // Hasło zakodowane bcryptem
+        role: "admin",
+        mustChangePassword: false
+    },
+    {
+        username: 'USER',
+        passwordHash: bcrypt.hashSync('user123', 10),  // Przykładowy użytkownik
+        role: "user",
+        mustChangePassword: true  
     }
 ];
 
-const validatePassword = (password) => {
-    const minLength = 8; 
-    const requireSpecialCharacters = false;
-    const requireUpperLower = false; 
+// Walidacja hasła
+const validatePassword = (password) => password.length >= 8;
 
-    if (password.length < minLength) return false;
-    if (requireSpecialCharacters && !/[\W\d]/.test(password)) return false;
-    if (requireUpperLower && !( /[a-z]/.test(password) && /[A-Z]/.test(password))) return false;
-    if (!checkUniqueCharacters(password)) return false; //walidacja unikalnosci
-
-    return true;
-};
-
-const checkUniqueCharacters = (password) => {
-    const charSet = new Set(password);
-    return charSet.size === password.length;
-};
-
+// Endpoint logowania
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const user = users.find(u => u.username === username);
+  console.log(user)
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
-        const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token });
-
+        if (user.mustChangePassword) {
+          console.log("musisz zmienic haslo")
+            return res.json({ message: 'Musisz zmienić hasło', mustChangePassword: true, token });
+        } else {
+          console.log("nie musisz zmienic haslo")
+            return res.json({ token, role: user.role });
+        }
     } else {
-        res.status(401).json({ message: 'Login lub hasło niepoprawne' });
+        return res.status(401).json({ message: 'Login lub hasło niepoprawne' });
     }
 });
 
+// Endpoint zmiany hasła
 app.post('/admin/change-password', (req, res) => {
-    const { token, newPassword } = req.body;
+   
 
+    console.log('Token:', token);
+    const { token, oldPassword, newPassword } = req.body;
+  
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const user = users.find(u => u.username === decoded.username);
-
-        if (user) {
+        console.log(decoded)
+        console.log(user)
+        if (user && bcrypt.compareSync(oldPassword, user.passwordHash)) {
             if (validatePassword(newPassword)) {
                 user.passwordHash = bcrypt.hashSync(newPassword, 10);
-                res.json({ message: 'Hasło zmienione pomyślnie' });
+                user.mustChangePassword = false;
+                return res.json({ message: 'Hasło zmienione pomyślnie' });
             } else {
-                res.status(400).json({ message: 'Hasło nie spełnia wymagań' });
+                return res.status(400).json({ message: 'Hasło musi mieć co najmniej 8 znaków' });
             }
         } else {
-            res.status(404).json({ message: 'Użytkownik nie znaleziony' });
+            return res.status(400).json({ message: 'Stare hasło jest niepoprawne' });
         }
     } catch (error) {
-        res.status(401).json({ message: 'Token nieprawidłowy' });
+      console.error('Błąd JWT:', error);
+        return res.status(401).json({ message: 'Nieprawidłowy token' });
     }
-});
-
-
-
-app.post('/admin/save-settings', (req, res) => {
-  const { token, settings } = req.body;
-
-  console.log('Otrzymane dane:', settings);
-
-  try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = users.find(u => u.username === decoded.username);
-
-      if (user) {
-          passwordSettings = { ...passwordSettings, ...settings }; //aktualizacja ustawien
-          console.log('Nowe ustawienia:', passwordSettings); 
-          res.json({ message: 'Ustawienia zapisane pomyślnie', settings: passwordSettings }); 
-      } else {
-          res.status(404).json({ message: 'Użytkownik nie znaleziony' });
-      }
-  } catch (error) {
-      console.error('Błąd przy weryfikacji tokena:', error);
-      res.status(401).json({ message: 'Token nieprawidłowy' });
-  }
-});
-
-
-// Endpoint do pobierania ustawień
-app.get('/admin/get-settings', (req, res) => {
-  res.json(passwordSettings); //zwaraca aktualne ustawienia
-});
-
-
-
-
-
-// Endpoint do root (domyślny)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Uruchomienie serwera
@@ -124,3 +82,46 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);
 });
+
+
+
+
+// Endpoint zmiany hasła dla użytkownika
+app.post('/user/change-password', (req, res) => {
+  const authHeader = req.headers.authorization;
+  console.log('Nagłówki:', req.headers); // Logowanie nagłówków
+  const token = authHeader && authHeader.split(' ')[1];  // Bezpieczne rozdzielenie nagłówka
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Stare i nowe hasło są wymagane' });
+  }
+
+  if (!token) {
+      return res.status(401).json({ message: 'Brak tokenu' });
+  }
+
+  try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = users.find(u => u.username === decoded.username && decoded.role === 'user');
+
+      if (user) {
+          if (bcrypt.compareSync(oldPassword, user.passwordHash)) {
+              if (validatePassword(newPassword)) {
+                  user.passwordHash = bcrypt.hashSync(newPassword, 10);
+                  return res.json({ message: 'Hasło zmienione pomyślnie' });
+              } else {
+                  return res.status(400).json({ message: 'Hasło musi mieć co najmniej 8 znaków' });
+              }
+          } else {
+              return res.status(400).json({ message: 'Stare hasło jest niepoprawne' });
+          }
+      } else {
+          return res.status(404).json({ message: 'Użytkownik nie znaleziony' });
+      }
+  } catch (error) {
+      console.error('Błąd JWT:', error);
+      return res.status(401).json({ message: 'Nieprawidłowy token' });
+  }
+});
+

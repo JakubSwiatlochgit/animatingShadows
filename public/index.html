@@ -3,93 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ustawienia bezpieczeństwa</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Logowanie</title>
 </head>
 <body>
-    <div class="container">
+    <!-- Sekcja logowania -->
+    <div id="login">
+        <h2>Logowanie</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Login" required>
+            <input type="password" id="password" placeholder="Hasło" required>
+            <button type="submit">Zaloguj się</button>
+        </form>
+        <p id="error-message" style="color:red; display:none;">Login lub hasło niepoprawne</p>
+    </div>
 
-        <!-- Panel Logowania -->
-        <div class="login-container" id="loginContainer">
-            <h2>Panel Logowania</h2>
-            <form id="loginForm" onsubmit="login(event)">
+    <!-- Panel użytkownika -->
+    <div id="userPanel" style="display:none;">
+        <h2>Panel Użytkownika</h2>
+        <p>Witaj w panelu użytkownika!</p>
 
-                <div class="row">
-                    <label for="username">Login:</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="row">
-                    <label for="user-password">Hasło:</label>
-                    <input type="password" id="user-password" required>
-                </div>
-                <button type="submit">Zaloguj się</button>
-            </form>
-            <p id="error-message" style="color:red; display:none;">Login lub hasło niepoprawne</p>
+        <!-- Formularz zmiany hasła -->
+        <h3>Zmień hasło</h3>
+        <div id="changePasswordSection" style="display:none;">
+            <input type="password" id="userOldPassword" placeholder="Stare hasło" required>
+            <input type="password" id="userNewPassword" placeholder="Nowe hasło" required>
+            <button id="userChangePasswordButton">Zmień hasło</button>
+            <p id="passwordChangeMessage" style="color:green; display:none;"></p>
         </div>
+        
+        <!-- Przycisk do zakończenia pracy (wylogowania) -->
+        <button id="logoutButton">Wyloguj</button>
+    </div>
 
-        <!-- Panel Admina (ukryty) -->
-        <div class="panels" id="adminPanel" style="display: none;">
-          <div class="settings-container">
-            <div class="section">
-                <form id="passwordForm" onsubmit="return saveSettings()">
-                  <h2>Panel Admina</h2>
-                    <label for="password-length">Minimalna długość i złożoność hasła dla użytkownika</label>
-                    <div class="row">
-                        <label for="password-length">Długość hasła:</label>
-                        <input type="number" id="password-length" value="8" min="1">
-                    </div>
-                    <div class="row">
-                        <label>Złożoność hasła:</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" id="special-characters"> Znaki specjalne lub cyfry</label>
-                            <label><input type="checkbox" id="upper-lower-letters"> Małe i wielkie litery</label>
-                        </div>
-                    </div>
-                    <button type="submit">Zapisz ustawienia</button>
-
-                    <h3>Zmiana hasła admina</h3>
-                    <div class="row">
-                        <label for="new-admin-password">Nowe hasło:</label>
-                        <input type="password" id="new-admin-password" oninput="validateAdminPassword()">
-                    </div>
-                    <ul>
-                        <li id="admin-min-length-requirement">
-                            <span class="icon">❌</span> Minimalna długość: <span id="admin-min-length-value">8</span> znaków
-                        </li>
-                        <li id="admin-unique-characters-requirement">
-                            <span class="icon">❌</span> Brak powtarzających się znaków
-                        </li>
-                        <li id="admin-special-char-requirement">
-                            <span class="icon">❌</span> Znaki specjalne lub cyfry
-                        </li>
-                        <li id="admin-upper-lower-requirement">
-                            <span class="icon">❌</span> Małe i wielkie litery
-                        </li>
-                    </ul>
-
-                </form>
-                <button onclick="logout()">Wyloguj się</button>
-            </div>
-          </div>
-        </div>
-        <!-- Wymagania do logowania w przyszlosci -->
-        <div class="password-requirements">
-            <h3>Wymagania hasła</h3>
-            <ul>
-                <li id="min-length-requirement">
-                    <span class="icon">❌</span> Minimalna długość: <span id="min-length-value">8</span> znaków
-                </li>
-                <li id="unique-characters-requirement">
-                    <span class="icon">❌</span> Brak powtarzających się znaków
-                </li>
-                <li id="special-char-requirement">
-                    <span class="icon">❌</span> Znaki specjalne lub cyfry
-                </li>
-                <li id="upper-lower-requirement">
-                    <span class="icon">❌</span> Małe i wielkie litery
-                </li>
-            </ul>
-        </div>
+    <!-- Panel admina -->
+    <div id="adminPanel" style="display:none;">
+        <h2>Panel Administratora</h2>
+        <p>Witaj w panelu administratora!</p>
     </div>
 
     <script src="script.js"></script>
