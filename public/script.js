@@ -37,10 +37,18 @@ loginForm.addEventListener('submit', (e) => {
     .catch(err => console.error(err));
 });
 
-// Obsługa zmiany hasła dla użytkownika
 userChangePasswordButton.addEventListener('click', () => {
     const oldPassword = document.getElementById('userOldPassword').value;
     const newPassword = document.getElementById('userNewPassword').value;
+
+    console.log('Old Password:', oldPassword);
+    console.log('New Password:', newPassword);
+
+    const validationResult = validatePassword(newPassword);
+    if (!validationResult.valid) {
+        alert(validationResult.message);
+        return; // Zatrzymaj, jeśli hasło nie jest poprawne
+    }
 
     fetch('http://localhost:3000/user/change-password', {
         method: 'POST',
@@ -66,6 +74,20 @@ userChangePasswordButton.addEventListener('click', () => {
     })
     .catch(err => console.error('Błąd:', err));
 });
+
+
+// Walidacja hasła
+const validatePassword = (password) => {
+    const minLength = 8; // Minimalna długość hasła
+    if (password.length < minLength) {
+        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
+    }
+    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
+    if (uniqueChars.size < password.length) {
+        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
+    }
+    return { valid: true };
+};
 
 
 // Obsługa wylogowania (zakończenia pracy)

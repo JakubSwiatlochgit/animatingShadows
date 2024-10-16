@@ -26,7 +26,18 @@ let users = [
 ];
 
 // Walidacja hasła
-const validatePassword = (password) => password.length >= 8;
+const validatePassword = (password) => {
+  const minLength = 8; // Minimalna długość hasła
+  if (password.length < minLength) {
+      return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
+  }
+  const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
+  if (uniqueChars.size < password.length) {
+      return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
+  }
+  return { valid: true };
+};
+
 
 // Endpoint logowania
 app.post('/login', (req, res) => {
@@ -86,12 +97,14 @@ app.listen(PORT, () => {
 
 
 
-// Endpoint zmiany hasła dla użytkownika
+
+
 app.post('/user/change-password', (req, res) => {
   const authHeader = req.headers.authorization;
-  console.log('Nagłówki:', req.headers); // Logowanie nagłówków
-  const token = authHeader && authHeader.split(' ')[1];  // Bezpieczne rozdzielenie nagłówka
+  const token = authHeader && authHeader.split(' ')[1];
   const { oldPassword, newPassword } = req.body;
+
+  console.log({ oldPassword, newPassword }); // Sprawdź dane
 
   if (!oldPassword || !newPassword) {
       return res.status(400).json({ message: 'Stare i nowe hasło są wymagane' });
@@ -106,13 +119,14 @@ app.post('/user/change-password', (req, res) => {
       const user = users.find(u => u.username === decoded.username && decoded.role === 'user');
 
       if (user) {
+          console.log(user.passwordHash); // Sprawdź, czy hash hasła jest poprawny
           if (bcrypt.compareSync(oldPassword, user.passwordHash)) {
-              if (validatePassword(newPassword)) {
-                  user.passwordHash = bcrypt.hashSync(newPassword, 10);
-                  return res.json({ message: 'Hasło zmienione pomyślnie' });
-              } else {
-                  return res.status(400).json({ message: 'Hasło musi mieć co najmniej 8 znaków' });
+              const passwordValidation = validatePassword(newPassword);
+              if (!passwordValidation.valid) {
+                  return res.status(400).json({ message: passwordValidation.message });
               }
+              user.passwordHash = bcrypt.hashSync(newPassword, 10);
+              return res.json({ message: 'Hasło zmienione pomyślnie' });
           } else {
               return res.status(400).json({ message: 'Stare hasło jest niepoprawne' });
           }
@@ -124,4 +138,7 @@ app.post('/user/change-password', (req, res) => {
       return res.status(401).json({ message: 'Nieprawidłowy token' });
   }
 });
+
+
+
 
