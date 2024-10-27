@@ -19,31 +19,16 @@ let users = [
     },
     {
         username: 'USER',
-        passwordHash: bcrypt.hashSync('user123', 10),  // Przykładowy użytkownik
+        passwordHash: bcrypt.hashSync('user123', 10),
         role: "user",
         mustChangePassword: true  
     }
 ];
-// Uruchomienie serwera
+// start serwera
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);
 });
-
-
-// Walidacja hasła
-const validatePassword = (password) => {
-  const minLength = 8; // Minimalna długość hasła
-  if (password.length < minLength) {
-      return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
-  }
-  const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
-  if (uniqueChars.size < password.length) {
-      return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
-  }
-  return { valid: true };
-};
-
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
@@ -69,9 +54,6 @@ app.post('/login', (req, res) => {
         return res.status(401).json({ message: 'Login lub hasło niepoprawne' });
     }
 });
-
-
-
 
 app.post('/user/change-password', (req, res) => {
   const authHeader = req.headers.authorization;
@@ -167,3 +149,15 @@ app.post('/logout', (req, res) => {
 
 
 
+//walidacja hasła
+const validatePassword = (password) => {
+    const minLength = 8; // Minimalna długość hasła
+    if (password.length < minLength) {
+        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
+    }
+    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
+    if (uniqueChars.size < password.length) {
+        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
+    }
+    return { valid: true };
+  };

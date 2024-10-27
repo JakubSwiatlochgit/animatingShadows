@@ -1,10 +1,9 @@
-// Dodaj event listener do formularza logowania
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    // Wysłanie żądania logowania
+    // żadanie logowania
     fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,8 +31,8 @@ loginForm.addEventListener('submit', (e) => {
                 alert('Zalogowano pomyślnie jako ' + data.role);
             }
 
-            // Inicjalizacja przycisków wylogowania
-            initializeLogoutButtons(); // Przenieś tutaj
+            // inicjalizacja przyciskow wylogowania
+            initializeLogoutButtons();
         } else {
             document.getElementById('error-message').style.display = 'block';
         }
@@ -41,22 +40,18 @@ loginForm.addEventListener('submit', (e) => {
     .catch(err => console.error(err));
 });
 
-// Funkcja do inicjalizacji przycisków wylogowania
+// inicjalizacja wylogowań
 function initializeLogoutButtons() {
-    console.log("dupa");
-    console.log('Sprawdzanie przycisków wylogowania');
+    console.log('pobranie przyciskow');
     const logoutButtons = document.querySelectorAll('.logoutButton');
-    console.log('Znalezione przyciski wylogowania:', logoutButtons);
-
     logoutButtons.forEach(logoutButton => {
-        // Wyczyść poprzednie event listenery
+        // czyszczenie starych eventów
         logoutButton.removeEventListener('click', handleLogout);
         logoutButton.addEventListener('click', handleLogout);
     });
 }
 
 function handleLogout() {
-    console.log("Wylogowano"); // Dodaj ten log
     fetch('http://localhost:3000/logout', {
         method: 'POST',
         headers: {
@@ -74,15 +69,13 @@ function handleLogout() {
         token = '';  
         document.getElementById('userPanel').style.display = 'none'; 
         document.getElementById('adminPanel').style.display = 'none'; 
-        document.getElementById('login').style.display = 'block'; // Pokazanie sekcji logowania
+        document.getElementById('login').style.display = 'block';
         alert(data.message);
     })
     .catch(err => console.error('Błąd:', err));
 }
 
-
-
-
+//zmiana hasła na userze
 userChangePasswordButton.addEventListener('click', () => {
     const oldPassword = document.getElementById('userOldPassword').value;
     const newPassword = document.getElementById('userNewPassword').value;
@@ -93,7 +86,7 @@ userChangePasswordButton.addEventListener('click', () => {
     const validationResult = validatePassword(newPassword);
     if (!validationResult.valid) {
         alert(validationResult.message);
-        return; // Zatrzymaj, jeśli hasło nie jest poprawne
+        return;
     }
 
     fetch('http://localhost:3000/user/change-password', {
@@ -122,25 +115,12 @@ userChangePasswordButton.addEventListener('click', () => {
 });
 
 
-// Walidacja hasła
-const validatePassword = (password) => {
-    const minLength = 8; // Minimalna długość hasła
-    if (password.length < minLength) {
-        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
-    }
-    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
-    if (uniqueChars.size < password.length) {
-        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
-    }
-    return { valid: true };
-};
-
 //lista userów
-// Po pomyślnym zalogowaniu i zwróceniu roli admina
+// tylko gdy rola to amdin
 if (data.role === 'admin') {
     document.getElementById('adminPanel').style.display = 'block';
     console.log("Żądanie do serwera o użytkoników")
-    fetchUsers(); // Wywołaj funkcję pobierającą użytkowników
+    fetchUsers();
 }
 
 function fetchUsers() {
@@ -166,3 +146,15 @@ function fetchUsers() {
 }
 
 
+//walidacja hasła
+const validatePassword = (password) => {
+    const minLength = 8; // Minimalna długość hasła
+    if (password.length < minLength) {
+        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
+    }
+    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
+    if (uniqueChars.size < password.length) {
+        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
+    }
+    return { valid: true };
+  };

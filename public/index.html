@@ -6,7 +6,7 @@
     <title>Logowanie</title>
 </head>
 <body>
-    <!-- Sekcja logowania -->
+    <!-- Logowanie -->
     <div id="login">
         <h2>Logowanie</h2>
         <form id="loginForm">
@@ -18,12 +18,12 @@
 
     </div>
 
-<!-- Panel użytkownika -->
+<!-- Panel Użytkownika -->
 <div id="userPanel" style="display:none;">
     <h2>Panel Użytkownika</h2>
     <p>Witaj w panelu użytkownika!</p>
 
-    <!-- Formularz zmiany hasła -->
+    <!-- Zmiana Hasła -->
     <h3>Zmień hasło</h3>
     <div id="changePasswordSection" style="display:none;">
         <input type="password" id="userOldPassword" placeholder="Stare hasło" required>
@@ -32,7 +32,7 @@
         <p id="passwordChangeMessage" style="color:green; display:none;"></p>
     </div>
 
-    <!-- Przycisk do zakończenia pracy (wylogowania) -->
+    <!-- Wylogowanie -->
     <button class="logoutButton">Wyloguj</button>
 
 </div>
@@ -46,17 +46,10 @@
     <h3>Lista użytkowników</h3>
     <ul id="userList"></ul>
 
-    <!-- Panel zmiany hasła dla administratora -->
-    <h3>Zmień hasło</h3>
-    <div id="adminChangePasswordSection" style="display:none;">
-        <input type="password" id="adminOldPassword" placeholder="Stare hasło" required>
-        <input type="password" id="adminNewPassword" placeholder="Nowe hasło" required>
-        <button id="adminChangePasswordButton">Zmień hasło</button>
-        <p id="adminPasswordChangeMessage" style="color:green; display:none;"></p>
-    </div>
+    
 
-    <!-- Przycisk do zakończenia pracy (wylogowania) -->
-    <button class="logoutButton" >Wyloguj</button>
+    <!-- Wylogowanie -->
+    <button class="logoutButton">Wyloguj</button>
 </div>
 
     <script src="script.js"></script>
