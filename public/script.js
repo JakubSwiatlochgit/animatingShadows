@@ -1,4 +1,3 @@
-// Backend
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
@@ -26,7 +25,8 @@ loginForm.addEventListener('submit', (e) => {
                 console.log('Logowanie pomyślne, rola:', data.role);
                 document.getElementById('userPanel').style.display = 'block'; // Pokaż panel użytkownika lub admina
                 if (data.role === 'admin') {
-                    document.getElementById('adminPanel').style.display = 'block';
+                    document.getElementById('adminPanel').style.display = 'block'; // Pokaż panel admina
+                    fetchUsers(); // Wywołaj funkcję pobierającą użytkowników
                 }
                 alert('Zalogowano pomyślnie jako ' + data.role);
             }
@@ -36,6 +36,7 @@ loginForm.addEventListener('submit', (e) => {
     })
     .catch(err => console.error(err));
 });
+
 
 userChangePasswordButton.addEventListener('click', () => {
     const oldPassword = document.getElementById('userOldPassword').value;
@@ -89,6 +90,38 @@ const validatePassword = (password) => {
     return { valid: true };
 };
 
+//lista userów
+// Po pomyślnym zalogowaniu i zwróceniu roli admina
+if (data.role === 'admin') {
+    document.getElementById('adminPanel').style.display = 'block';
+    console.log("Żądanie do serwera o użytkoników")
+    fetchUsers(); // Wywołaj funkcję pobierającą użytkowników
+}
+
+function fetchUsers() {
+    fetch('http://localhost:3000/admin/users', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(users => {
+        const userList = document.getElementById('userList');
+        userList.innerHTML = ''; // Wyczyść wcześniejsze dane
+
+        users.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = `${user.username} - Rola: ${user.role}`;
+            console.log(user)
+            userList.appendChild(li);
+        });
+    })
+    .catch(err => console.error('Błąd podczas pobierania użytkowników:', err));
+}
+
+
+
 
 // Obsługa wylogowania (zakończenia pracy)
 logoutButton.addEventListener('click', () => {
@@ -97,3 +130,6 @@ logoutButton.addEventListener('click', () => {
     document.getElementById('login').style.display = 'block';
     alert('Zostałeś wylogowany.');
 });
+
+
+

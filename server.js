@@ -39,19 +39,24 @@ const validatePassword = (password) => {
 };
 
 
-// Endpoint logowania
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const user = users.find(u => u.username === username);
-  console.log(user)
+    console.log(user);
+
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
         const token = jwt.sign({ username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
         if (user.mustChangePassword) {
-          console.log("musisz zmienic haslo")
+            console.log("musisz zmienic haslo");
             return res.json({ message: 'Musisz zmienić hasło', mustChangePassword: true, token });
         } else {
-          console.log("nie musisz zmienic haslo")
+            console.log("nie musisz zmieniac hasla");
+            if (user.role === 'admin') {
+                console.log(users)
+                return res.json({ token, role: user.role, users: users });
+            }
+
             return res.json({ token, role: user.role });
         }
     } else {
@@ -59,11 +64,12 @@ app.post('/login', (req, res) => {
     }
 });
 
+
 // Endpoint zmiany hasła
 app.post('/admin/change-password', (req, res) => {
    
-
-    console.log('Token:', token);
+    console.log('Próba zmiany hasła...');
+    console.log('Token:', req.body.token);
     const { token, oldPassword, newPassword } = req.body;
   
     try {
@@ -83,7 +89,7 @@ app.post('/admin/change-password', (req, res) => {
             return res.status(400).json({ message: 'Stare hasło jest niepoprawne' });
         }
     } catch (error) {
-      console.error('Błąd JWT:', error);
+        console.error('Błąd podczas weryfikacji tokenu:', error);
         return res.status(401).json({ message: 'Nieprawidłowy token' });
     }
 });
@@ -139,6 +145,30 @@ app.post('/user/change-password', (req, res) => {
   }
 });
 
+//lista userów
+app.get('/admin/users', (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Brak tokenu' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role === 'admin') {
+            // Filtruj użytkowników z rolą 'user'
+            const filteredUsers = users.filter(user => user.role === 'user');
+            console.log("Filtered users: ", filteredUsers);
+            return res.json(filteredUsers); 
+        } else {
+            return res.status(403).json({ message: 'Brak dostępu' });
+        }
+    } catch (error) {
+        console.error('Błąd JWT:', error);
+        return res.status(401).json({ message: 'Nieprawidłowy token' });
+    }
+});
 
 
 

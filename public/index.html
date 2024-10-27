@@ -18,28 +18,45 @@
     </div>
 
     <!-- Panel użytkownika -->
-    <div id="userPanel" style="display:none;">
-        <h2>Panel Użytkownika</h2>
-        <p>Witaj w panelu użytkownika!</p>
+<div id="userPanel" style="display:none;">
+    <h2>Panel Użytkownika</h2>
+    <p>Witaj w panelu użytkownika!</p>
 
-        <!-- Formularz zmiany hasła -->
-        <h3>Zmień hasło</h3>
-        <div id="changePasswordSection" style="display:none;">
-            <input type="password" id="userOldPassword" placeholder="Stare hasło" required>
-            <input type="password" id="userNewPassword" placeholder="Nowe hasło" required>
-            <button id="userChangePasswordButton">Zmień hasło</button>
-            <p id="passwordChangeMessage" style="color:green; display:none;"></p>
-        </div>
-        
-        <!-- Przycisk do zakończenia pracy (wylogowania) -->
-        <button id="logoutButton">Wyloguj</button>
+    <!-- Formularz zmiany hasła -->
+    <h3>Zmień hasło</h3>
+    <div id="changePasswordSection" style="display:none;">
+        <input type="password" id="userOldPassword" placeholder="Stare hasło" required>
+        <input type="password" id="userNewPassword" placeholder="Nowe hasło" required>
+        <button id="userChangePasswordButton">Zmień hasło</button>
+        <p id="passwordChangeMessage" style="color:green; display:none;"></p>
     </div>
 
-    <!-- Panel admina -->
-    <div id="adminPanel" style="display:none;">
-        <h2>Panel Administratora</h2>
-        <p>Witaj w panelu administratora!</p>
+    <!-- Przycisk do zakończenia pracy (wylogowania) -->
+    <button id="logoutButton">Wyloguj</button>
+</div>
+
+<!-- Panel admina -->
+<div id="adminPanel" style="display:none;">
+    <h2>Panel Administratora</h2>
+    <p>Witaj w panelu administratora!</p>
+
+    <!-- Lista użytkowników -->
+    <h3>Lista użytkowników</h3>
+    <ul id="userList"></ul>
+
+    <!-- Panel zmiany hasła dla administratora -->
+    <h3>Zmień hasło</h3>
+    <div id="adminChangePasswordSection" style="display:none;">
+        <input type="password" id="adminOldPassword" placeholder="Stare hasło" required>
+        <input type="password" id="adminNewPassword" placeholder="Nowe hasło" required>
+        <button id="adminChangePasswordButton">Zmień hasło</button>
+        <p id="adminPasswordChangeMessage" style="color:green; display:none;"></p>
     </div>
+
+    <!-- Przycisk do zakończenia pracy (wylogowania) -->
+    <button id="adminLogoutButton">Wyloguj</button>
+</div>
+
 
     <script src="script.js"></script>
 </body>
