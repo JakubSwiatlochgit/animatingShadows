@@ -24,6 +24,12 @@ let users = [
         mustChangePassword: true  
     }
 ];
+// Uruchomienie serwera
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Serwer działa na porcie ${PORT}`);
+});
+
 
 // Walidacja hasła
 const validatePassword = (password) => {
@@ -63,44 +69,6 @@ app.post('/login', (req, res) => {
         return res.status(401).json({ message: 'Login lub hasło niepoprawne' });
     }
 });
-
-
-// Endpoint zmiany hasła
-app.post('/admin/change-password', (req, res) => {
-   
-    console.log('Próba zmiany hasła...');
-    console.log('Token:', req.body.token);
-    const { token, oldPassword, newPassword } = req.body;
-  
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = users.find(u => u.username === decoded.username);
-        console.log(decoded)
-        console.log(user)
-        if (user && bcrypt.compareSync(oldPassword, user.passwordHash)) {
-            if (validatePassword(newPassword)) {
-                user.passwordHash = bcrypt.hashSync(newPassword, 10);
-                user.mustChangePassword = false;
-                return res.json({ message: 'Hasło zmienione pomyślnie' });
-            } else {
-                return res.status(400).json({ message: 'Hasło musi mieć co najmniej 8 znaków' });
-            }
-        } else {
-            return res.status(400).json({ message: 'Stare hasło jest niepoprawne' });
-        }
-    } catch (error) {
-        console.error('Błąd podczas weryfikacji tokenu:', error);
-        return res.status(401).json({ message: 'Nieprawidłowy token' });
-    }
-});
-
-// Uruchomienie serwera
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Serwer działa na porcie ${PORT}`);
-});
-
-
 
 
 
@@ -167,6 +135,33 @@ app.get('/admin/users', (req, res) => {
     } catch (error) {
         console.error('Błąd JWT:', error);
         return res.status(401).json({ message: 'Nieprawidłowy token' });
+    }
+});
+
+
+app.post('/logout', (req, res) => {
+    let revokedTokens = [];
+
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    console.log('Header:', authHeader);
+    console.log('Token:', token);
+    
+    if (token) {
+        console.log("Zgłoszenie wylogowania tokenu:", token);
+        
+        // Dodaj logowanie do tablicy revokacji
+        try {
+            revokedTokens.push(token);
+            console.log("Token wylogowany:", token);
+            return res.json({ message: 'Wylogowano pomyślnie' });
+        } catch (err) {
+            console.error("Błąd przy próbie wylogowania:", err);
+            return res.status(500).json({ message: 'Błąd serwera' });
+        }
+    } else {
+        console.log("Brak tokenu w nagłówku");
+        return res.status(401).json({ message: 'Brak tokenu' });
     }
 });
 

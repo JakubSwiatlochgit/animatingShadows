@@ -1,3 +1,4 @@
+// Dodaj event listener do formularza logowania
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
@@ -11,25 +12,28 @@ loginForm.addEventListener('submit', (e) => {
     })
     .then(res => res.json())
     .then(data => {
-        console.log(data); // Sprawdź, co zwraca serwer
+        console.log(data);
         if (data.token) {
             token = data.token;
-            document.getElementById('login').style.display = 'none'; // Ukryj sekcję logowania
+            document.getElementById('login').style.display = 'none';
 
             // Użytkownik musi zmienić hasło
             if (data.mustChangePassword) {
-                console.log('Musisz zmienić hasło.');
-                document.getElementById('userPanel').style.display = 'block'; // Pokaż panel użytkownika
-                document.getElementById('changePasswordSection').style.display = 'block'; // Pokaż sekcję zmiany hasła
+                document.getElementById('userPanel').style.display = 'block';
+                document.getElementById('changePasswordSection').style.display = 'block';
             } else {
                 console.log('Logowanie pomyślne, rola:', data.role);
-                document.getElementById('userPanel').style.display = 'block'; // Pokaż panel użytkownika lub admina
                 if (data.role === 'admin') {
-                    document.getElementById('adminPanel').style.display = 'block'; // Pokaż panel admina
-                    fetchUsers(); // Wywołaj funkcję pobierającą użytkowników
+                    document.getElementById('adminPanel').style.display = 'block';
+                    document.getElementById('userPanel').style.display = 'none';
+
+                    fetchUsers();
                 }
                 alert('Zalogowano pomyślnie jako ' + data.role);
             }
+
+            // Inicjalizacja przycisków wylogowania
+            initializeLogoutButtons(); // Przenieś tutaj
         } else {
             document.getElementById('error-message').style.display = 'block';
         }
@@ -37,11 +41,52 @@ loginForm.addEventListener('submit', (e) => {
     .catch(err => console.error(err));
 });
 
+// Funkcja do inicjalizacji przycisków wylogowania
+function initializeLogoutButtons() {
+    console.log("dupa");
+    console.log('Sprawdzanie przycisków wylogowania');
+    const logoutButtons = document.querySelectorAll('.logoutButton');
+    console.log('Znalezione przyciski wylogowania:', logoutButtons);
+
+    logoutButtons.forEach(logoutButton => {
+        // Wyczyść poprzednie event listenery
+        logoutButton.removeEventListener('click', handleLogout);
+        logoutButton.addEventListener('click', handleLogout);
+    });
+}
+
+function handleLogout() {
+    console.log("Wylogowano"); // Dodaj ten log
+    fetch('http://localhost:3000/logout', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error('Błąd wylogowania');
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        token = '';  
+        document.getElementById('userPanel').style.display = 'none'; 
+        document.getElementById('adminPanel').style.display = 'none'; 
+        document.getElementById('login').style.display = 'block'; // Pokazanie sekcji logowania
+        alert(data.message);
+    })
+    .catch(err => console.error('Błąd:', err));
+}
+
+
+
 
 userChangePasswordButton.addEventListener('click', () => {
     const oldPassword = document.getElementById('userOldPassword').value;
     const newPassword = document.getElementById('userNewPassword').value;
-
+    console.log(userChangePasswordButton)
     console.log('Old Password:', oldPassword);
     console.log('New Password:', newPassword);
 
@@ -119,17 +164,5 @@ function fetchUsers() {
     })
     .catch(err => console.error('Błąd podczas pobierania użytkowników:', err));
 }
-
-
-
-
-// Obsługa wylogowania (zakończenia pracy)
-logoutButton.addEventListener('click', () => {
-    token = '';  // Czyścimy token po wylogowaniu
-    document.getElementById('userPanel').style.display = 'none';
-    document.getElementById('login').style.display = 'block';
-    alert('Zostałeś wylogowany.');
-});
-
 
 
