@@ -37,7 +37,6 @@
 
 </div>
 
-<!-- Panel admina -->
 <div id="adminPanel" style="display:none;">
     <h2>Panel Administratora</h2>
     <p>Witaj w panelu administratora!</p>
@@ -46,11 +45,24 @@
     <h3>Lista użytkowników</h3>
     <ul id="userList"></ul>
 
-    
+    <!-- Formularz do edycji użytkownika -->
+    <h3>Edytuj użytkownika</h3>
+    <div id="updateUserForm">
+        <select id="currentUsernameSelect" required>
+            <option value="" disabled selected>Wybierz użytkownika</option>
+        </select>
+        <input type="text" id="newUsername" placeholder="Nowa nazwa użytkownika">
+        <input type="password" id="newPassword" placeholder="Nowe hasło">
+        <button class="changeUserPasswordAdmin">Zmien Haslo użytkownika</button>
+        <p id="updateMessage" style="color:green; display:none;"></p>
+    </div>
 
     <!-- Wylogowanie -->
     <button class="logoutButton">Wyloguj</button>
 </div>
+
+
+
 
     <script src="script.js"></script>
 </body>

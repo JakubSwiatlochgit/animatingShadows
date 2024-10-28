@@ -33,6 +33,8 @@ loginForm.addEventListener('submit', (e) => {
 
             // inicjalizacja przyciskow wylogowania
             initializeLogoutButtons();
+            initializeChangePasswordButtons();
+            
         } else {
             document.getElementById('error-message').style.display = 'block';
         }
@@ -132,19 +134,18 @@ function fetchUsers() {
     })
     .then(res => res.json())
     .then(users => {
+        console.log("Pobrani użytkownicy:", users);
         const userList = document.getElementById('userList');
         userList.innerHTML = ''; // Wyczyść wcześniejsze dane
-
         users.forEach(user => {
             const li = document.createElement('li');
             li.textContent = `${user.username} - Rola: ${user.role}`;
-            console.log(user)
             userList.appendChild(li);
         });
+        populateUserSelect(users); // Ustaw listę użytkowników do edycji
     })
     .catch(err => console.error('Błąd podczas pobierania użytkowników:', err));
 }
-
 
 //walidacja hasła
 const validatePassword = (password) => {
@@ -158,3 +159,63 @@ const validatePassword = (password) => {
     }
     return { valid: true };
   };
+
+
+// Wypełnienie listy użytkowników w polu wyboru
+function populateUserSelect(users) {
+    const currentUsernameSelect = document.getElementById('currentUsernameSelect');
+    currentUsernameSelect.innerHTML = '<option value="" disabled selected>Wybierz użytkownika</option>';
+    users.forEach(user => {
+        if (user.role === 'user') {
+            const option = document.createElement('option');
+            option.value = user.username;
+            option.textContent = user.username;
+            currentUsernameSelect.appendChild(option);
+            console.log(user.role)
+        }
+    });
+}
+
+
+function initializeChangePasswordButtons() {
+    console.log('Inicjalizacja przycisku zmiany hasła');
+    const changeUserPasswordButtons = document.querySelectorAll('.changeUserPasswordAdmin');
+    changeUserPasswordButtons.forEach(button => {
+        // Czyszczenie starych eventów
+        button.removeEventListener('click', handleChangeUserPassword);
+        button.addEventListener('click', handleChangeUserPassword);
+    });
+}
+function handleChangeUserPassword() {
+    const currentUsername = document.getElementById('currentUsernameSelect').value;
+    const newUsername = document.getElementById('newUsername').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    console.log("Próba aktualizacji użytkownika:", { currentUsername, newUsername, newPassword });
+
+    // Wysyłanie zapytania do serwera
+    fetch('http://localhost:3000/admin/update-user', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ currentUsername, newUsername, newPassword })
+    })
+    .then(res => {
+        if (!res.ok) {
+            console.log("Błąd odpowiedzi:", res.status);
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log("Odpowiedź serwera na aktualizację użytkownika:", data);
+        document.getElementById('updateMessage').textContent = data.message;
+        document.getElementById('updateMessage').style.display = 'block';
+        fetchUsers();  // Odśwież listę użytkowników
+    })
+    .catch(err => console.error('Błąd:', err));
+}
+
+

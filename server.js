@@ -149,6 +149,9 @@ app.post('/logout', (req, res) => {
 
 
 
+
+
+
 //walidacja hasła
 const validatePassword = (password) => {
     const minLength = 8; // Minimalna długość hasła
@@ -161,3 +164,28 @@ const validatePassword = (password) => {
     }
     return { valid: true };
   };
+
+
+
+// Aktualizacja danych użytkownika (dla admina)
+app.post('/admin/update-user', (req, res) => {
+    const { currentUsername, newUsername, newPassword } = req.body;
+    console.log(currentUsername, newUsername, newPassword)
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (decoded.role === 'admin') {
+        const user = users.find(u => u.username === currentUsername);
+        if (user) {
+            user.username = newUsername || user.username;
+            if (newPassword) user.passwordHash = bcrypt.hashSync(newPassword, 10);
+            return res.json({ message: 'Użytkownik zaktualizowany' });
+        } else {
+            return res.status(404).json({ message: 'Nie znaleziono użytkownika' });
+        }
+    } else {
+        return res.status(403).json({ message: 'Brak uprawnień' });
+    }
+});
+
+
