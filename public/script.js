@@ -77,11 +77,24 @@ function handleLogout() {
     .catch(err => console.error('Błąd:', err));
 }
 
-//zmiana hasła na userze
+// walidacja hasła
+const validatePassword = (password) => {
+    const minLength = 8; // Minimalna długość hasła
+    if (password.length < minLength) {
+        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
+    }
+    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
+    if (uniqueChars.size < password.length) {
+        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
+    }
+    return { valid: true };
+};
+
+// Zdarzenie dla przycisku zmiany hasła użytkownika
 userChangePasswordButton.addEventListener('click', () => {
     const oldPassword = document.getElementById('userOldPassword').value;
     const newPassword = document.getElementById('userNewPassword').value;
-    console.log(userChangePasswordButton)
+    console.log(userChangePasswordButton);
     console.log('Old Password:', oldPassword);
     console.log('New Password:', newPassword);
 
@@ -116,6 +129,10 @@ userChangePasswordButton.addEventListener('click', () => {
     .catch(err => console.error('Błąd:', err));
 });
 
+// ... reszta Twojego kodu
+
+
+
 
 //lista userów
 // tylko gdy rola to amdin
@@ -146,19 +163,6 @@ function fetchUsers() {
     })
     .catch(err => console.error('Błąd podczas pobierania użytkowników:', err));
 }
-
-//walidacja hasła
-const validatePassword = (password) => {
-    const minLength = 8; // Minimalna długość hasła
-    if (password.length < minLength) {
-        return { valid: false, message: `Hasło musi mieć co najmniej ${minLength} znaków` };
-    }
-    const uniqueChars = new Set(password); // Użycie Set do unikalnych znaków
-    if (uniqueChars.size < password.length) {
-        return { valid: false, message: 'Hasło nie może zawierać powtarzających się znaków' };
-    }
-    return { valid: true };
-  };
 
 
 // Wypełnienie listy użytkowników w polu wyboru
